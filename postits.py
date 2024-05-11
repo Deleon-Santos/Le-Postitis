@@ -39,18 +39,18 @@ def agendar_tarefas():
     # Criar interface gráfica
 col = [
     [sg.Text('Gerenciador de Tarefas')],
-    [sg.Input('Título da Tarefa')],
-    [sg.Multiline('Descrição da Tarefa',key="-IMPUT-")],
-    [sg.Input('Data Limite (AAAA-MM-DD)')],
-    [sg.Radio('Alta', 'Prioridade', key='prioridade1')],
-    [sg.Radio('Média', 'Prioridade', key='prioridade2')],
-    [sg.Radio('Baixa', 'Prioridade', key='prioridade3')],
+    [sg.Input('Título da Tarefa',key="-TITULO-")],
+    [sg.Multiline('Descrição da Tarefa',key="-DESC-",size=(43,5))],
+    [sg.Input('Data Limite (AAAA-MM-DD)',key="-DATA-")],
+    [sg.Radio('Alta','RADIO', key='-BAIXA-')],
+    [sg.Radio('Média', 'RADIO',key='-MEDIA-')],
+    [sg.Radio('Baixa', 'RADIO',default=True, key='-ALTA-')],
     [sg.Button('Adicionar Tarefa')],
     [sg.Button('Salvar Alterações')],
     [sg.Button('Sair')],
-    [sg.Text('Tarefas Ativas:')],]
+    [sg.Text('Tarefas Ativas:'),sg.T("",key="-SN-")],]
    
-col2= [[sg.Multiline( key='tarefas') , sg.VerticalSeparator()],]
+col2= [[ sg.VerticalSeparator(),sg.Multiline( key='tarefas',size=(40,10)) ],]
 layout=[
    [ sg.Column(col),sg.Column(col2)],
 ]
@@ -64,17 +64,30 @@ while True:
         break
 
     elif event == 'Adicionar Tarefa':
-        titulo = values['Título da Tarefa']
-        descricao = values['Descrição da Tarefa']
-        data_limite = values['Data Limite']
-        prioridade = values.get('Prioridade', 'Baixa')
+        titulo = values['-TITULO-']
+        if not titulo:
+            sg.popup("Adicione um titulo")
+        
+        descricao = values['-DESC-']
+        if not descricao:
+            sg.popup("Adicione uma descrição")
+        data_limite = values['-DATA-']
+        if not data_limite:
+            sg.popup("Adicione uma data")
+
+        if values['-ALTA-']== True:
+            prioridade =  "Alto"
+        elif values['-BAIXA-']== True:
+            prioridade = "Baixo"
+        else:
+            prioridade = "Media"
 
         tarefa = {
             "titulo": titulo,
             "descricao": descricao,
-            "data_limite": datetime.datetime.strptime(data_limite, "%Y-%m-%d").date(),
-            "prioridade": prioridade,
+            "data_limite": data_limite,
+            "prioridade": prioridade
         }
-
+        window['-SN-'].update("Tarefa Agendada")
 
 window.close()
