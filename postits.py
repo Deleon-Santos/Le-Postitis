@@ -38,24 +38,33 @@ def agendar_tarefas():
 
     # Criar interface gráfica
 col = [
-    [sg.Text('Gerenciador de Tarefas')],
+    [sg.Text('Gerenciador de Tarefas',font=("Any",20,"bold"))],
+    [sg.Text("Titulo",font=("Any",9,))],
     [sg.Input('Título da Tarefa',key="-TITULO-")],
+    [sg.Text("Descrição",font=("Any",9,))],
     [sg.Multiline('Descrição da Tarefa',key="-DESC-",size=(43,5))],
+    [sg.Text("Data",font=("Any",9,))],
     [sg.Input('Data Limite (AAAA-MM-DD)',key="-DATA-")],
-    [sg.Radio('Alta','RADIO', key='-BAIXA-')],
-    [sg.Radio('Média', 'RADIO',key='-MEDIA-')],
-    [sg.Radio('Baixa', 'RADIO',default=True, key='-ALTA-')],
+    [sg.Text("Prioridade",font=("Any",9,))],
+    [sg.Radio('Alta','RADIO', key='-BAIXA-'),sg.Radio('Média', 'RADIO',key='-MEDIA-'),sg.Radio('Baixa', 'RADIO',default=True, key='-ALTA-')],
+    
+    
     [sg.Button('Adicionar Tarefa')],
-    [sg.Button('Salvar Alterações')],
+    
     [sg.Button('Sair')],
     [sg.Text('Tarefas Ativas:'),sg.T("",key="-SN-")],]
    
-col2= [[ sg.VerticalSeparator(),sg.Multiline( key='tarefas',size=(40,10)) ],]
+col2= [[sg.P(), sg.Multiline( key='tarefas',size=(40,23)),sg.P() ],
+       [sg.Push(),sg.B("Anterior"),sg.B('Proxima'),sg.Push()]]
+
 layout=[
-   [ sg.Column(col),sg.Column(col2)],
+    [sg.TabGroup([
+       [sg.Tab("TEREFAS",col)],
+       [sg.Tab("POSTITS",col2)]
+        ])]
 ]
 
-window = sg.Window('Gerenciador de Tarefas', layout)
+window = sg.Window('Gerenciador de Tarefas', layout, resizable=True)
 
 while True:
     event, values = window.read()
