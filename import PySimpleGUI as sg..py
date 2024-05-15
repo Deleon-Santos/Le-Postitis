@@ -32,8 +32,9 @@ col = [
      sg.Radio('Média', 'PRIORIDADE', key='-PRIORIDADE-'), 
      sg.Radio('Baixa', 'PRIORIDADE', key='-PRIORIDADE-')],
     [sg.Text("ID Atividade")], [sg.Input('', key="-ID-", size=(5,1)),sg.Checkbox("Concluída", key="-SN-")],
-    [sg.Button('Adicionar Tarefa'),sg.Button('atualiza Tarefa'),sg.Button('excluir Tarefa')],
-    [sg.Button('Pesquisar'),sg.Button('Sair')],
+    [sg.Button('Adicionar Tarefa'), sg.Button('Atualizar Tarefa'), sg.Button('Excluir Tarefa')],
+    [sg.Text("Pesquisar por ID")], [sg.Input('', key="-SEARCH_ID-", size=(5,1)), sg.Button('Pesquisar')],
+    [sg.Button('Sair')],
 ]
 
 col2 = [
@@ -68,5 +69,20 @@ while True:
                 task_list_content += f"ID: {tarefa['id']}\nTítulo: {tarefa['titulo']}\nDescrição: {tarefa['descricao']}\nData Limite: {tarefa['data_limite']}\nConcluída: {concluida}\nPrioridade: {tarefa['prioridade']}\n\n"
             window['tarefas'].update(task_list_content)
 
-window.close()
+    elif event == 'Pesquisar':
+        search_id = int(values['-SEARCH_ID-']) if values['-SEARCH_ID-'].isdigit() else None
+        if search_id is None:
+            sg.popup("Digite um ID válido para pesquisar!")
+        else:
+            found_task = next((tarefa for tarefa in tarefas_postits if tarefa['id'] == search_id), None)
+            if found_task:
+                window['-ID-'].update(found_task['id'])
+                window['-TITULO-'].update(found_task['titulo'])
+                window['-DESC-'].update(found_task['descricao'])
+                window['-DATA-'].update(found_task['data_limite'])
+                window['-PRIORIDADE-'].update(True if found_task['prioridade'] == 'Alta' else False)
+                window['-SN-'].update(found_task['concluida'])
+            else:
+                sg.popup(f"Tarefa com ID {search_id} não encontrada!")
 
+window.close()
