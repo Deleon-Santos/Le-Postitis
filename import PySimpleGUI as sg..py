@@ -9,28 +9,31 @@ def atualizar_tarefas():
     global id_count
     id_count += 1
     tarefa = {
-        "id": id_count,
-        "titulo": values['-TITULO-'],
-        "descricao": values['-DESC-'],
-        "data_limite": values['-DATA-'],
-        "prioridade": values['-PRIORIDADE-'],
-        "concluida": values['-SN-'],
-        "cor_prioridade": "red" if values['-PRIORIDADE-'] == "Alta" else 
-                          "yellow" if values['-PRIORIDADE-'] == "Média" else "green"
-    }
+        "Id": id_count,
+        "Titulo": values['-TITULO-'],
+        "Descricao": values['-DESC-'],
+        "Prazo": values['-DATA-'],
+        "Prioridade": prioridade,
+        "Concluida": values['-SN-'],}
+        
     tarefas_postits.append(tarefa)
+    for tarefa in tarefas_postits:
+        for k , v in tarefa.items():
+
+            window['tarefas'].print({k,v})
+
     sg.popup("Tarefa Agendada")
 
 # Criar interface gráfica
 col = [
-    [sg.Text('Gerenciador de Tarefas', font=("Any", 20, "bold"))],
+    [sg.Text('GERENCIADOR DE TAREFAS', font=("Any", 20, "bold"))],
     [sg.Text("Título")], [sg.Input('Título da Tarefa', key="-TITULO-")],
     [sg.Text("Descrição")], [sg.Multiline('Descrição da Tarefa', key="-DESC-", size=(43, 5))],
     [sg.Text("Data Limite")], [sg.Input('Data Limite (AAAA-MM-DD)', key="-DATA-")],
     [sg.Text("Prioridade")],
-    [sg.Radio('Alta', 'PRIORIDADE', key='-PRIORIDADE-', default=True), 
-     sg.Radio('Média', 'PRIORIDADE', key='-PRIORIDADE-'), 
-     sg.Radio('Baixa', 'PRIORIDADE', key='-PRIORIDADE-')],
+    [sg.Radio('Alta', 'PRIORIDADE', key='-ALTA-', default=True), 
+     sg.Radio('Média', 'PRIORIDADE', key='-MEDIA-'), 
+     sg.Radio('Baixa', 'PRIORIDADE', key='-BAIXA-')],
     [sg.Text("ID Atividade")], [sg.Input('', key="-ID-", size=(5,1)),sg.Checkbox("Concluída", key="-SN-")],
     [sg.Button('Adicionar Tarefa'), sg.Button('Atualizar Tarefa'), sg.Button('Excluir Tarefa')],
     [sg.Text("Pesquisar por ID")], [sg.Input('', key="-SEARCH_ID-", size=(5,1)), sg.Button('Pesquisar')],
@@ -61,13 +64,22 @@ while True:
         if not values['-TITULO-'] or not values['-DESC-'] or not values['-DATA-']:
             sg.popup("Preencha todos os campos!")
         else:
+            if values['-ALTA-'] ==True:
+                prioridade = 'Alta'
+            elif values['-MEDIA-']  ==True:
+                prioridade = 'Média'
+            else: 
+                prioridade = 'Baixa' 
             atualizar_tarefas()
             # Atualizar a lista de tarefas no segundo tab (POSTITS)
             task_list_content = ''
             for tarefa in tarefas_postits:
+                
+                
                 concluida = "Sim" if tarefa["concluida"] else "Não"
-                task_list_content += f"ID: {tarefa['id']}\nTítulo: {tarefa['titulo']}\nDescrição: {tarefa['descricao']}\nData Limite: {tarefa['data_limite']}\nConcluída: {concluida}\nPrioridade: {tarefa['prioridade']}\n\n"
-            window['tarefas'].update(task_list_content)
+                task_list_content += f"ID: {tarefa['id']}\nTítulo: {tarefa['titulo']}\nDescrição: {tarefa['descricao']}\nData Limite: {tarefa['data_limite']}\nConcluída: {concluida}\nPrioridade: {prioridade}\n\n"
+            
+            print(tarefas_postits)
 
     elif event == 'Pesquisar':
         search_id = int(values['-SEARCH_ID-']) if values['-SEARCH_ID-'].isdigit() else None
@@ -86,3 +98,8 @@ while True:
                 sg.popup(f"Tarefa com ID {search_id} não encontrada!")
 
 window.close()
+
+
+'''"cor_prioridade": "red" if values['-PRIORIDADE-'] == "Alta" else 
+                          "yellow" if values['-PRIORIDADE-'] == "Média" else "green"'''
+    
