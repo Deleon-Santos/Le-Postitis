@@ -5,8 +5,9 @@ tarefas_postits = []
 id_contador = 0
 
 
-def atualizar_tarefas(prioridade):
+def atualizar_tarefas(prioridade,concluida):
     global id_contador
+    
     id_contador += 1
     tarefa = {
         "Id": id_contador,
@@ -14,28 +15,19 @@ def atualizar_tarefas(prioridade):
         "Descricao": values['-DESC-'],
         "Prazo": values['-DATA-'],
         "Prioridade": prioridade,
-        "Concluida": values['-SN-'],}
+        "Concluida": concluida,}
         
     tarefas_postits.append(tarefa)      
     sg.popup("Tarefa Agendada")
 
 def atualize():
-        task_list_content = ''
+        lista_tarefas = ''
         for tarefa in tarefas_postits:          
-            concluida = "Sim" if tarefa["Concluida"] else "Não"
-            task_list_content += f"ID: {tarefa['Id']}\nTítulo: {tarefa['Titulo']}\nDescrição: {tarefa['Descricao']}\nData Limite: {tarefa['Prazo']}\nConcluída: {concluida}\nPrioridade: {tarefa['Prioridade']}\n\n"
+            #concluida = "Sim" if tarefa["Concluida"] else "Não"
+            lista_tarefas += f"ID: {tarefa['Id']}\nTítulo: {tarefa['Titulo']}\nDescrição: {tarefa['Descricao']}\nData Limite: {tarefa['Prazo']}\nConcluída: {concluida}\nPrioridade: {tarefa['Prioridade']}\n\n"
         
-        window['tarefas'].update(task_list_content)
-        print(tarefas_postits)
-
-def prioridades():
-    if values['-ALTA-'] ==True:
-        prioridade = 'Alta'
-    elif values['-MEDIA-']  ==True:
-        prioridade = 'Média'
-    else: 
-        prioridade = 'Baixa' 
-    return prioridade
+        window['tarefas'].update(lista_tarefas)
+        print(lista_tarefas)
 
 
 sg.SetOptions(
@@ -61,7 +53,7 @@ col = [
      sg.Radio('Média', 'PRIORIDADE', key='-MEDIA-'), 
      sg.Radio('Baixa', 'PRIORIDADE', key='-BAIXA-')],
     
-    [sg.Text("ID Atividade")], [sg.Input('', key="-ID-", size=(5,1),disabled=True),sg.Checkbox("Concluida", key="-SN-")],
+    [sg.Text("ID Atividade")], [sg.Input('', key="-ID-", size=(5,1)),sg.Checkbox("Concluida", key="-SN-")],
     [sg.Button('Adicionar Tarefa'), sg.P(),sg.Button('Atualizar Tarefa'),sg.P(), sg.Button('Excluir Tarefa')]]),sg.P()],
     
     [sg.P(),sg.Frame("Pesquisa",[[sg.Text("Pesquisar por ID")], [sg.Input('', key="-SEARCH_ID-", size=(5,1)),sg.T("",size=(19,1)), sg.Button('Pesquisar Tarefa')]]),sg.P()],
@@ -69,8 +61,8 @@ col = [
 
 col2 = [
     [sg.Multiline('', key='tarefas', size=(53, 30))],
-    [sg.Frame("Pesquisa por Estado",[[sg.Text("Prioridade",size=(48,1))],[sg.Radio('Alta', 'PRIORIDADE', key='-TALTA-', default=True), sg.Radio('Média', 'PRIORIDADE', key='-TMEDIA-'),
-    sg.Radio('Baixa', 'PRIORIDADE', key='-TBAIXA-'),sg.Push(),sg.Checkbox("Concluida", key="-TSN-")]])],
+    [sg.Frame("Pesquisa por Estado",[[sg.Text("Prioridade",size=(48,1))],[sg.Radio('Alta', 'PRIORIDAD', key='-TALTA-', default=True), sg.Radio('Média', 'PRIORIDAD', key='-TMEDIA-'),
+    sg.Radio('Baixa', 'PRIORIDAD', key='-TBAIXA-'),sg.Checkbox("Concluidas", key="-TSN-"),sg.Push(),sg.B('Buscar')]])],
     [sg.Button("Listar Tarefas")],]
 direita=[
      [sg.TabGroup([
@@ -91,28 +83,32 @@ while True:
     elif event == 'Adicionar Tarefa':
         if not values['-TITULO-'] or not values['-DESC-'] or not values['-DATA-']:
             sg.popup("Preencha todos os campos!")
+        
         else:
-            prioridade= prioridades()
-            atualizar_tarefas(prioridade)
+            concluida= 'Sim' if values['-SN-']==True else 'Não'
+            prioridade = "Alta" if values['-ALTA-'] else "Medio" if values['-MEDIA-'] else "Baixo"
+            atualizar_tarefas(prioridade,concluida)
             atualize()
         
     elif event == 'Pesquisar Tarefa':
         buscar_id = int(values['-SEARCH_ID-']) if values['-SEARCH_ID-'].isdigit() else None
         if buscar_id is None:
             sg.popup("Digite um ID válido para pesquisar!")
+        
         else:
-            found_task = next((tarefa for tarefa in tarefas_postits if tarefa['Id'] == buscar_id), None)
-            if found_task:
-                status = found_task['Prioridade']
+            lista_atualizar = next((tarefa for tarefa in tarefas_postits if tarefa['Id'] == buscar_id), None)
+            if lista_atualizar:
+                status = lista_atualizar['Prioridade']
                 print(status)
-                window['-ID-'].update(found_task['Id'])
-                window['-TITULO-'].update(found_task['Titulo'])
-                window['-DESC-'].update(found_task['Descricao'])
-                window['-DATA-'].update(found_task['Prazo'])
-                window['-ALTA-'].update(value=found_task['Prioridade'] == 'Alta')
-                window['-MEDIA-'].update(value=found_task['Prioridade'] == 'Media')
-                window['-BAIXA-'].update(value=found_task['Prioridade'] == 'Baixa')
-                window['-SN-'].update(found_task['Concluida'])
+                window['-ID-'].update(lista_atualizar['Id'])
+                window['-TITULO-'].update(lista_atualizar['Titulo'])
+                window['-DESC-'].update(lista_atualizar['Descricao'])
+                window['-DATA-'].update(lista_atualizar['Prazo'])
+                window['-ALTA-'].update(value=lista_atualizar['Prioridade'] == 'Alta')
+                window['-MEDIA-'].update(value=lista_atualizar['Prioridade'] == 'Media')
+                window['-BAIXA-'].update(value=lista_atualizar['Prioridade'] == 'Baixa')
+                window['-SN-'].update(lista_atualizar['Concluida'])
+            
             else:
                 sg.popup(f"Tarefa com ID {buscar_id} não encontrada!")
 
@@ -122,10 +118,11 @@ while True:
             sg.popup("Digite um ID válido para pesquisar!")
 
         else: # Verifica se a tarefa com o ID fornecido existe
-            found_task = next((tarefa for tarefa in tarefas_postits if tarefa['Id'] == buscar_id), None)
-            if found_task is not None:
-                tarefas_postits.remove(found_task)
+            lista_excluir = next((tarefa for tarefa in tarefas_postits if tarefa['Id'] == buscar_id), None)
+            if lista_excluir is not None:
+                tarefas_postits.remove(lista_excluir)
                 sg.popup(f"Tarefa com ID {buscar_id} foi removida")
+            
             else:
                 sg.popup(f"Nenhuma tarefa encontrada com o ID {buscar_id}")
         atualize()
@@ -134,44 +131,47 @@ while True:
         search_id = int(values['-SEARCH_ID-'])
         if not values['-TITULO-'] or not values['-DESC-'] or not values['-DATA-'] or not values['-ID-']:
             sg.popup("Preencha todos os campos!")
+        
         else:
-            prioridade=prioridades()
+            prioridade = "Alta" if values['-ALTA-'] else "Medio" if values['-MEDIA-'] else "Baixo"
+            concluida= 'Sim' if values['-SN-']==True else 'Não'
+            
             # Encontrar a tarefa pelo ID
-            found_task = next((tarefa for tarefa in tarefas_postits if tarefa['Id'] == search_id), None)
-            if found_task:
-                found_task['Titulo'] = values['-TITULO-']
-                found_task['Descricao'] = values['-DESC-']
-                found_task['Prazo'] = values['-DATA-']
-                found_task['Prioridade'] = prioridade
-                found_task['Concluida'] = values['-SN-']
+            lista_atualizada = next((tarefa for tarefa in tarefas_postits if tarefa['Id'] == search_id), None)
+            if lista_atualizada:
+                lista_atualizada['Titulo'] = values['-TITULO-']
+                lista_atualizada['Descricao'] = values['-DESC-']
+                lista_atualizada['Prazo'] = values['-DATA-']
+                lista_atualizada['Prioridade'] = prioridade
+                lista_atualizada['Concluida'] = concluida
                 
                 # Atualizar a lista de tarefas na interface
-                task_list_content = ""
-                for tarefa in tarefas_postits:
-                    concluida = "Sim" if tarefa["Concluida"] else "Não"
-                    task_list_content += f"ID: {tarefa['Id']}\nTítulo: {tarefa['Titulo']}\nDescrição: {tarefa['Descricao']}\nData Limite: {tarefa['Prazo']}\nConcluída: {concluida}\nPrioridade: {tarefa['Prioridade']}\n\n"
-                window['tarefas'].update(task_list_content)
-                
+                atualize()
                 sg.popup(f"Tarefa com ID {search_id} foi atualizada com sucesso!")
             else:
                 sg.popup(f"Tarefa com ID {search_id} não encontrada!")
     
-    elif event == "Listar Tarefas":
-        prioridade=prioridades()
-        concluida = values['-TSN-']
-        task_list_content = ""
+    elif event == "Buscar":
+        prioridad = "Alta" if values['-TALTA-'] else "Medio" if values['-TMEDIA-'] else "Baixo"
+
+        concluid ='Sim'if values['-TSN-']==True else 'Não'
+        print(f'concluida{concluid}')
+        
+        task_mostar = ""
         
         for tarefa in tarefas_postits:
-            if tarefa['Prioridade'] == prioridade and tarefa['Concluida'] == concluida:
-                concluida_str = "Sim" if tarefa["Concluida"] else "Não"
-                task_list_content += f"ID: {tarefa['Id']}\nTítulo: {tarefa['Titulo']}\nDescrição: {tarefa['Descricao']}\nData Limite: {tarefa['Prazo']}\nConcluída: {concluida_str}\nPrioridade: {tarefa['Prioridade']}\n\n"
+            if tarefa['Prioridade'] == prioridad and tarefa['Concluida'] == concluid:
+                #concluida_str = "Sim" if tarefa["Concluida"] else "Não"
+                task_mostar += f"ID: {tarefa['Id']}\nTítulo: {tarefa['Titulo']}\nDescrição: {tarefa['Descricao']}\nData Limite: {tarefa['Prazo']}\nConcluída: {tarefa['Concluida']}\nPrioridade: {tarefa['Prioridade']}\n\n"
         
-        if task_list_content:
-            window['tarefas'].update(task_list_content)
-            print(task_list_content)
+        if task_mostar:
+            window['tarefas'].update(task_mostar)
+            print(f'lista de tarefas{task_mostar}')
         else:
+            window['tarefas'].update(task_mostar)
             sg.popup("Nenhuma tarefa encontrada com os critérios selecionados!")
-
+    elif event == 'Listar Tarefas':
+        atualize()
 
 window.close()
 
