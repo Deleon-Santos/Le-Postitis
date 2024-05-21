@@ -28,6 +28,8 @@ def atualize():
         
         window['tarefas'].update(lista_tarefas)
         print(lista_tarefas)
+        
+
 
 
 sg.SetOptions(
@@ -172,6 +174,7 @@ while True:
             sg.popup("Nenhuma tarefa encontrada com os critérios selecionados!")
     elif event == 'Listar Tarefas':
         atualize()
+        
 
 window.close()
 
