@@ -1,5 +1,5 @@
 
-## Documentação do Software Le Postits para o Github README
+## Documentação do Software Le Postits 
 
 **Descrição do Software**
 
@@ -51,7 +51,7 @@ O Le Postits é um projeto de código aberto e você pode contribuir de diversas
 
 **Desenvolvedor**
 
-Deleon Santos
+* Deleon Santos
 
 **Licença**
 
