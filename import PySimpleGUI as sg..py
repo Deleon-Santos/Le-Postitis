@@ -15,7 +15,7 @@ def atualizar_tarefas(prioridade,concluida):
         "Descricao": values['-DESC-'],
         "Prazo": values['-DATA-'],
         "Prioridade": prioridade,
-        "Concluida": concluida,}
+        "Concluida": values['-SN-']}
         
     tarefas_postits.append(tarefa)      
     sg.popup("Tarefa Agendada")
@@ -23,8 +23,7 @@ def atualizar_tarefas(prioridade,concluida):
 def atualize():
         lista_tarefas = ''
         for tarefa in tarefas_postits:          
-            #concluida = "Sim" if tarefa["Concluida"] else "Não"
-            lista_tarefas += f"ID: {tarefa['Id']}\nTítulo: {tarefa['Titulo']}\nDescrição: {tarefa['Descricao']}\nData Limite: {tarefa['Prazo']}\nConcluída: {concluida}\nPrioridade: {tarefa['Prioridade']}\n\n"
+            lista_tarefas += f"ID: {tarefa['Id']}\nTítulo: {tarefa['Titulo']}\nDescrição: {tarefa['Descricao']}\nData Limite: {tarefa['Prazo']}\nConcluída: {'Sim' if tarefa['Concluida']== True else 'Não'}\nPrioridade: {tarefa['Prioridade']}\n\n"
         
         window['tarefas'].update(lista_tarefas)
         print(lista_tarefas)
@@ -38,6 +37,7 @@ sg.SetOptions(
                 element_background_color='#363636', 
                 scrollbar_color=None, input_elements_background_color='#F7F3EC', 
                 button_color=('white', '#4F4F4F'))#Configuração de thema da janela
+
 # Criar interface gráfica
 esquerda=[
     [sg.Image(filename='img.png',size=(450,650))]]
@@ -51,9 +51,9 @@ col = [
     [sg.Text("Data Limite")], [sg.CalendarButton("Escolher Data", target='-DATA-', format='%d/%m/%Y'),sg.Input('10/12/2024' ,key="-DATA-",size=(18,1))],
     
     [sg.Text("Prioridade")],
-    [sg.Radio('Alta', 'PRIORIDADE', key='-ALTA-', default=True), 
+    [sg.Radio('Alta', 'PRIORIDADE', key='-ALTA-'), 
      sg.Radio('Média', 'PRIORIDADE', key='-MEDIA-'), 
-     sg.Radio('Baixa', 'PRIORIDADE', key='-BAIXA-')],
+     sg.Radio('Baixa', 'PRIORIDADE', key='-BAIXA-', default=True)],
     
     [sg.Text("ID Atividade")], [sg.Input('', key="-ID-", size=(5,1)),sg.Checkbox("Concluida", key="-SN-")],
     [sg.Button('Adicionar Tarefa'), sg.P(),sg.Button('Atualizar Tarefa'),sg.P(), sg.Button('Excluir Tarefa')]]),sg.P()],
@@ -108,8 +108,9 @@ while True:
                 window['-DATA-'].update(lista_atualizar['Prazo'])
                 window['-ALTA-'].update(value=lista_atualizar['Prioridade'] == 'Alta')
                 window['-MEDIA-'].update(value=lista_atualizar['Prioridade'] == 'Media')
-                window['-BAIXA-'].update(value=lista_atualizar['Prioridade'] == 'Baixa')
+                window['-BAIXA-'].update( value=lista_atualizar['Prioridade'] == 'Baixa')
                 window['-SN-'].update(lista_atualizar['Concluida'])
+                print(lista_atualizar['Concluida'])
             
             else:
                 sg.popup(f"Tarefa com ID {buscar_id} não encontrada!")
@@ -136,7 +137,6 @@ while True:
         
         else:
             prioridade = "Alta" if values['-ALTA-'] else "Medio" if values['-MEDIA-'] else "Baixo"
-            concluida= 'Sim' if values['-SN-']==True else 'Não'
             
             # Encontrar a tarefa pelo ID
             lista_atualizada = next((tarefa for tarefa in tarefas_postits if tarefa['Id'] == search_id), None)
@@ -145,7 +145,7 @@ while True:
                 lista_atualizada['Descricao'] = values['-DESC-']
                 lista_atualizada['Prazo'] = values['-DATA-']
                 lista_atualizada['Prioridade'] = prioridade
-                lista_atualizada['Concluida'] = concluida
+                lista_atualizada['Concluida'] = values['-SN-']
                 
                 # Atualizar a lista de tarefas na interface
                 atualize()
@@ -154,17 +154,14 @@ while True:
                 sg.popup(f"Tarefa com ID {search_id} não encontrada!")
     
     elif event == "Buscar":
+        checkbox = values['-TSN-']
         prioridad = "Alta" if values['-TALTA-'] else "Medio" if values['-TMEDIA-'] else "Baixo"
-
-        concluid ='Sim'if values['-TSN-']==True else 'Não'
-        print(f'concluida{concluid}')
         
         task_mostar = ""
         
         for tarefa in tarefas_postits:
-            if tarefa['Prioridade'] == prioridad and tarefa['Concluida'] == concluid:
-                #concluida_str = "Sim" if tarefa["Concluida"] else "Não"
-                task_mostar += f"ID: {tarefa['Id']}\nTítulo: {tarefa['Titulo']}\nDescrição: {tarefa['Descricao']}\nData Limite: {tarefa['Prazo']}\nConcluída: {tarefa['Concluida']}\nPrioridade: {tarefa['Prioridade']}\n\n"
+            if tarefa['Prioridade'] == prioridad and tarefa['Concluida'] == checkbox:
+                task_mostar += f"ID: {tarefa['Id']}\nTítulo: {tarefa['Titulo']}\nDescrição: {tarefa['Descricao']}\nData Limite: {tarefa['Prazo']}\nConcluída: {'Sim'if tarefa['Concluida']==True else 'Não'}\nPrioridade: {tarefa['Prioridade']}\n\n"
         
         if task_mostar:
             window['tarefas'].update(task_mostar)
