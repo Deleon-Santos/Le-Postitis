@@ -1,11 +1,9 @@
 import PySimpleGUI as sg
 
-
 tarefas_postits = []
-id_contador = 0
+id_contador = int(0)
 
-
-def atualizar_tarefas(prioridade,concluida):
+def atualizar_tarefas(prioridade):
     global id_contador
     
     id_contador += 1
@@ -23,13 +21,9 @@ def atualizar_tarefas(prioridade,concluida):
 def atualize():
         lista_tarefas = ''
         for tarefa in tarefas_postits:          
-            lista_tarefas += f"ID: {tarefa['Id']}\nTítulo: {tarefa['Titulo']}\nDescrição: {tarefa['Descricao']}\nData Limite: {tarefa['Prazo']}\nConcluída: {'Sim' if tarefa['Concluida']== True else 'Não'}\nPrioridade: {tarefa['Prioridade']}\n\n"
-        
+            lista_tarefas += f"ID: {tarefa['Id']}\nTítulo: {tarefa['Titulo']}\nDescrição: {tarefa['Descricao']}\nData Limite: {tarefa['Prazo']}\nConcluída: {'Sim' if tarefa['Concluida']== True else 'Não'}\nPrioridade: {tarefa['Prioridade']}\n\n"    
         window['tarefas'].update(lista_tarefas)
         print(lista_tarefas)
-        
-
-
 
 sg.SetOptions(
                 background_color='#363636', 
@@ -55,7 +49,7 @@ col = [
      sg.Radio('Média', 'PRIORIDADE', key='-MEDIA-'), 
      sg.Radio('Baixa', 'PRIORIDADE', key='-BAIXA-', default=True)],
     
-    [sg.Text("ID Atividade")], [sg.Input('', key="-ID-", size=(5,1)),sg.Checkbox("Concluida", key="-SN-")],
+    [sg.Text("ID Atividade:"),sg.Text('', key="-ID-", size=(5,1))], [sg.Checkbox("Concluida", key="-SN-")],
     [sg.Button('Adicionar Tarefa'), sg.P(),sg.Button('Atualizar Tarefa'),sg.P(), sg.Button('Excluir Tarefa')]]),sg.P()],
     
     [sg.P(),sg.Frame("Pesquisa",[[sg.Text("Pesquisar por ID")], [sg.Input('', key="-SEARCH_ID-", size=(5,1)),sg.T("",size=(19,1)), sg.Button('Pesquisar Tarefa')]]),sg.P()],
@@ -70,7 +64,6 @@ direita=[
      [sg.TabGroup([
         [sg.Tab("TAREFAS", col)],
         [sg.Tab("POSTITS", col2)]])]]
-
 
 layout = [
     [sg.Col(esquerda),
@@ -89,9 +82,9 @@ while True:
         else:
             concluida= 'Sim' if values['-SN-']==True else 'Não'
             prioridade = "Alta" if values['-ALTA-'] else "Medio" if values['-MEDIA-'] else "Baixo"
-            atualizar_tarefas(prioridade,concluida)
+            atualizar_tarefas(prioridade)
             atualize()
-        
+            window['-ID-'].update(id_contador)
     elif event == 'Pesquisar Tarefa':
         buscar_id = int(values['-SEARCH_ID-']) if values['-SEARCH_ID-'].isdigit() else None
         if buscar_id is None:
@@ -106,9 +99,12 @@ while True:
                 window['-TITULO-'].update(lista_atualizar['Titulo'])
                 window['-DESC-'].update(lista_atualizar['Descricao'])
                 window['-DATA-'].update(lista_atualizar['Prazo'])
-                window['-ALTA-'].update(value=lista_atualizar['Prioridade'] == 'Alta')
-                window['-MEDIA-'].update(value=lista_atualizar['Prioridade'] == 'Media')
-                window['-BAIXA-'].update( value=lista_atualizar['Prioridade'] == 'Baixa')
+                if lista_atualizar['Prioridade'] == 'Alta': 
+                    window['-ALTA-'].update(value=True)
+                elif lista_atualizar['Prioridade'] == 'Media':
+                    window['-MEDIA-'].update(value=True)
+                else:  
+                    window['-BAIXA-'].update( value=True)
                 window['-SN-'].update(lista_atualizar['Concluida'])
                 print(lista_atualizar['Concluida'])
             
@@ -132,7 +128,7 @@ while True:
             
     elif event == 'Atualizar Tarefa':
         search_id = int(values['-SEARCH_ID-'])
-        if not values['-TITULO-'] or not values['-DESC-'] or not values['-DATA-'] or not values['-ID-']:
+        if not values['-TITULO-'] or not values['-DESC-'] or not values['-DATA-'] :
             sg.popup("Preencha todos os campos!")
         
         else:
@@ -172,7 +168,6 @@ while True:
     elif event == 'Listar Tarefas':
         atualize()
         
-
 window.close()
 
 
