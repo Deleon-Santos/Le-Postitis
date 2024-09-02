@@ -1,5 +1,12 @@
 
 ## Documentação do Software Le Postits 
+**Imagens**
+
+[Imagem da interface principal do software](adicionar.png)
+
+[Imagem da lista de tarefas](pesquisa-status.png)
+
+[Imagem da tela de edição de tarefas](removida.png)
 
 **Descrição do Software**
 
@@ -53,17 +60,11 @@ O Le Postits é um projeto de código aberto e você pode contribuir de diversas
 
 * Deleon Santos
 
-**Licença**
 
 
 
-**Imagens**
 
-[Imagem da interface principal do software](adicionar.png)
 
-[Imagem da lista de tarefas](pesquisa-status.png)
-
-[Imagem da tela de edição de tarefas](removida.png)
 
 
 
